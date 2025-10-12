@@ -1,0 +1,23 @@
+[profile.default]
+src = "src"
+out = "out"
+libs = ["lib"]
+solc_version = "0.8.20"
+optimizer = true
+optimizer_runs = 200
+
+remappings = [
+    "@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/",
+    "forge-std/=lib/forge-std/src/"
+]
+
+[rpc_endpoints]
+hoodi = "https://ethereum-hoodi-rpc.publicnode.com"
+localhost = "http://37.60.244.299"
+
+[etherscan]
+hoodi = { key = "", chain = 560048 }
+
+[profile.fs]
+read = true
+write = true
