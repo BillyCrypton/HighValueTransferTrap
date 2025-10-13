@@ -31,4 +31,4 @@ min_number_of_operators = 1
 max_number_of_operators = 3
 block_sample_size = 5
 private_trap = true
-whitelist = [0xfb3d951fa8496c6933ea0275695bca906c58527e]
+whitelist = ["0xfb3d951fa8496c6933ea0275695bca906c58527e"]
