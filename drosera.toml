@@ -1,15 +1,31 @@
+# ============================
+# Drosera Configuration File
+# ============================
+
+# RPC Endpoints
 ethereum_rpc = "https://0xrpc.io/hoodi"
-drosera_rpc = "https://relay.hoodi.drosera.io"
+drosera_rpc  = "https://relay.hoodi.drosera.io"
+
+# Network and Contract Info
 eth_chain_id = 560048
 drosera_address = "0x499b095Ed02f76E56444c242EC43A05F9c2A3ac8"
 
+# ============================
+# Trap Definitions
+# ============================
+
 [traps]
 
+# Example Trap: Monitors high-value transfers and triggers a response
 [traps.high_value_transfer_trap]
 path = "out/HighValueTransferTrap.sol/HighValueTransferTrap.json"
 address = "0x7aF47f6Ca4f6d9eFF0F78863d5Fe5276d0695E42"
+
+# Response handler contract and function
 response_contract = "0xD7D61ceF2D05a1485a408d7B683156B7D4E6b8BE"
 response_function = "handleHighValueTransfer(address,address,address,uint256,uint256)"
+
+# Trap parameters
 cooldown_period_blocks = 0
 min_number_of_operators = 1
 max_number_of_operators = 3
