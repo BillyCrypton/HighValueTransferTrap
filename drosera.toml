@@ -7,8 +7,8 @@ drosera_address = "0xfb3d951fa8496c6933ea0275695bca906c58527e"
 
 [traps.high_value_transfer_trap]
 path = "out/HighValueTransferTrap.sol/HighValueTransferTrap.json"
-address = "0x0000000000000000000000000000000000000000"
-response_contract = "0x0000000000000000000000000000000000000000"
+address = "0x7aF47f6Ca4f6d9eFF0F78863d5Fe5276d0695E42"
+response_contract = "0xD7D61ceF2D05a1485a408d7B683156B7D4E6b8BE"
 response_function = "handleHighValueTransfer(address,address,address,uint256,uint256)"
 cooldown_period_blocks = 0
 min_number_of_operators = 1
