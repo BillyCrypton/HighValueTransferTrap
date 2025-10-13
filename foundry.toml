@@ -12,7 +12,7 @@ remappings = [
 ]
 
 [rpc_endpoints]
-hoodi = "https://ethereum-hoodi-rpc.publicnode.com"
+hoodi = "https://0xrpc.io/hoodi"
 localhost = "http://37.60.244.299"
 
 [etherscan]
