@@ -1,24 +1,19 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-import "@openzeppelin/contracts/access/Ownable.sol";
+import "./ITrap.sol";
 
-interface IResponse {
-    function handleHighValueTransfer(address token, address from, address to, uint256 amount, uint256 timestamp) external;
-}
+/**
+ * @title HighValueTransferTrap
+ * @notice Detects transfers exceeding a specified threshold on Drosera network
+ * @author Bilnab
+ */
+contract HighValueTransferTrap is ITrap {
+    string public constant DISCORD_NAME = "Bilnab";
+    uint256 public constant VERSION = 1;
+    uint256 public constant TRANSFER_THRESHOLD = 100 ether; // adjust as needed
 
-/// @title HighValueTransferTrap
-/// @notice Stores configuration for a monitored token and exposes an admin-settable threshold.
-///         Drosera off-chain node can call `notifyTransfer` (or the response directly) when it detects a large transfer.
-contract HighValueTransferTrap is Ownable {
-    // token => threshold (in token smallest units)
-    mapping(address => uint256) public thresholds;
-
-    // optional response contract (will be called on incident)
-    IResponse public response;
-
-    // recorded incident struct
-    struct Incident {
+    struct TransferData {
         address token;
         address from;
         address to;
@@ -26,51 +21,70 @@ contract HighValueTransferTrap is Ownable {
         uint256 timestamp;
     }
 
-    Incident[] public incidents;
+    /**
+     * @notice Collects recent transfer data
+     * @return Encoded data representing the transfer
+     */
+    function collect() external view override returns (bytes memory) {
+        // Dummy placeholder collection logic
+        // In real deployment, the Drosera runtime populates state for analysis
+        TransferData memory data = TransferData({
+            token: address(0),
+            from: address(0),
+            to: address(0),
+            amount: 0,
+            timestamp: block.timestamp
+        });
 
-    event ThresholdSet(address indexed token, uint256 threshold);
-    event ResponseSet(address indexed response);
-    event IncidentRecorded(uint256 indexed incidentId, address indexed token, address from, address to, uint256 amount);
-
-    constructor(address _response) {
-        response = IResponse(_response);
+        return abi.encode(
+            VERSION,
+            data.token,
+            data.from,
+            data.to,
+            data.amount,
+            data.timestamp,
+            DISCORD_NAME
+        );
     }
 
-    /// @notice set monitoring threshold for a token (owner only)
-    function setThreshold(address token, uint256 threshold) external onlyOwner {
-        thresholds[token] = threshold;
-        emit ThresholdSet(token, threshold);
-    }
+    /**
+     * @notice Evaluates whether a high-value transfer occurred
+     * @param data Array of collected transfer data from recent blocks
+     * @return shouldTrigger True if a large transfer was detected
+     * @return responseData Encoded data for response contract
+     */
+    function shouldRespond(bytes[] calldata data)
+        external
+        pure
+        override
+        returns (bool shouldTrigger, bytes memory responseData)
+    {
+        if (data.length == 0) return (false, bytes(""));
 
-    /// @notice update the response contract address (owner only)
-    function setResponse(address _response) external onlyOwner {
-        response = IResponse(_response);
-        emit ResponseSet(_response);
-    }
+        (
+            uint256 version,
+            address token,
+            address from,
+            address to,
+            uint256 amount,
+            uint256 timestamp,
+            string memory discordName
+        ) = abi.decode(data[0], (uint256, address, address, address, uint256, uint256, string));
 
-    /// @notice Called by the Drosera node when a high-value transfer is detected off-chain.
-    ///         You may also restrict this to only certain callers (operators) if desired.
-    function notifyTransfer(address token, address from, address to, uint256 amount) external {
-        uint256 thr = thresholds[token];
-        require(thr != 0, "token not monitored");
-        require(amount >= thr, "below threshold");
+        if (version != VERSION) return (false, bytes(""));
 
-        uint256 ts = block.timestamp;
-        incidents.push(Incident({ token: token, from: from, to: to, amount: amount, timestamp: ts }));
-        uint256 id = incidents.length - 1;
-
-        // call the response contract for further handling (non-reverting best-effort)
-        try response.handleHighValueTransfer(token, from, to, amount, ts) {
-            // success
-        } catch {
-            // swallow, still record incident locally
+        if (amount >= TRANSFER_THRESHOLD) {
+            responseData = abi.encode(token, from, to, amount, timestamp, discordName);
+            return (true, responseData);
         }
 
-        emit IncidentRecorded(id, token, from, to, amount);
+        return (false, bytes(""));
     }
 
-    /// @notice convenience view to get total incidents count
-    function incidentsCount() external view returns (uint256) {
-        return incidents.length;
+    /**
+     * @notice Returns current configuration parameters
+     */
+    function getConfig() external pure returns (uint256 threshold, string memory discord) {
+        return (TRANSFER_THRESHOLD, DISCORD_NAME);
     }
 }
