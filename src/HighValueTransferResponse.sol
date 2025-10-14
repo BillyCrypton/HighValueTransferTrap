@@ -1,14 +1,38 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-/// @title HighValueTransferResponse
-/// @notice Simple response contract that emits an event for each handled incident.
-contract HighValueTransferResponse {
-    event HighValueAlert(address indexed token, address indexed from, address indexed to, uint256 amount, uint256 timestamp);
+/**
+ * @title HighValueTransferTrapResponse
+ * @notice Handles responses triggered by HighValueTransferTrap detections
+ * @author Bilnab
+ */
+contract HighValueTransferTrapResponse {
+    event HighValueTransferHandled(
+        address indexed token,
+        address indexed from,
+        address indexed to,
+        uint256 amount,
+        uint256 timestamp,
+        string reportedBy
+    );
 
-    /// @notice Called by the trap (via try/catch) to register/alert.
-    function handleHighValueTransfer(address token, address from, address to, uint256 amount, uint256 timestamp) external {
-        // minimal processing — just emit an event
-        emit HighValueAlert(token, from, to, amount, timestamp);
+    /**
+     * @notice Called by Drosera runtime when a high-value transfer is detected
+     * @param token The token address involved in the transfer
+     * @param from The sender address
+     * @param to The receiver address
+     * @param amount The transfer amount
+     * @param timestamp The timestamp of detection
+     */
+    function handleHighValueTransfer(
+        address token,
+        address from,
+        address to,
+        uint256 amount,
+        uint256 timestamp,
+        string memory reporter
+    ) external {
+        // Core logic: record or react to detected event
+        emit HighValueTransferHandled(token, from, to, amount, timestamp, reporter);
     }
 }
