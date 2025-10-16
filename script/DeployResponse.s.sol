@@ -2,22 +2,18 @@
 pragma solidity ^0.8.20;
 
 import "forge-std/Script.sol";
-import "../src/HighValueTransferTrapResponse.sol";
+import "../src/MockResponse.sol";
 
-/// @title DeployResponse Script
-/// @notice Deploys the HighValueTransferTrapResponse contract to the Hoodi Testnet
+/// @title DeployResponse
+/// @notice Deploys the MockResponse contract for Drosera trap testing
 contract DeployResponse is Script {
     function run() external {
-        // Start broadcasting with your private key
-        vm.startBroadcast();
+        uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
+        vm.startBroadcast(deployerPrivateKey);
 
-        // Deploy the response contract
-        HighValueTransferTrapResponse response = new HighValueTransferTrapResponse();
+        MockResponse response = new MockResponse();
+        console.log("MockResponse deployed to:", address(response));
 
-        // Log the deployed address
-        console.log("HighValueTransferTrapResponse deployed at:", address(response));
-
-        // Stop broadcasting
         vm.stopBroadcast();
     }
 }
