@@ -2,9 +2,15 @@
 pragma solidity ^0.8.20;
 
 /// @title MockResponse
-/// @notice A simple mock contract for testing Drosera traps.
+/// @notice Response contract for HighValueTransferTrap
 contract MockResponse {
-    event HighValueTransferHandled(address token, address from, address to, uint256 amount, uint256 timestamp);
+    event HighValueTransferHandled(
+        address token,
+        address from,
+        address to,
+        uint256 amount,
+        uint256 timestamp
+    );
 
     function handleHighValueTransfer(
         address token,
@@ -16,3 +22,4 @@ contract MockResponse {
         emit HighValueTransferHandled(token, from, to, amount, timestamp);
     }
 }
+
